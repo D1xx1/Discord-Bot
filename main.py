@@ -3,8 +3,7 @@ from discord.ext import commands
 from config import settings
 #import roles
 import random
-b = 0
-a = 0
+b, a = 0
 fkbot = commands.Bot(command_prefix = settings['prefix'])
 @fkbot.command()
 async def hello(ctx):
