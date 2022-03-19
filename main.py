@@ -13,13 +13,16 @@ async def привет(ctx):
     await ctx.send(f'Привет, {author.mention}')
 @fkbot.command()
 async def roll(ctx, arg):
-    if int(arg) < 0:
-        await ctx.send(random.randint(int(arg), 0))
-    else:
         try:
-            await ctx.send(random.randint(0,int(arg)))
+            if int(arg) < 0:
+                await ctx.send(random.randint(int(arg), 0))
+                return
+            else: 
+                await ctx.send(random.randint(0,int(arg)))
+                return
         except ValueError:
             author = ctx.message.author
             await ctx.send(f'{author.mention}, введи число!')
+            return
 
 fkbot.run(settings['token'])
