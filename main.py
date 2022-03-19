@@ -1,9 +1,7 @@
 import discord
 from discord.ext import commands
 from config import settings
-#import roles
 import random
-b, a = 0
 fkbot = commands.Bot(command_prefix = settings['prefix'])
 @fkbot.command()
 async def hello(ctx):
@@ -14,18 +12,14 @@ async def привет(ctx):
     author = ctx.message.author
     await ctx.send(f'Привет, {author.mention}')
 @fkbot.command()
-async def rnd(ctx,a ,b):
-    print(b)
-    if b < a:
-        a, b = b, a
-    elif a==b:
-        await ctx.send(a)
-        return
-
-    try:
-        await ctx.send(random.randrange(int(a),int(b)))
-    except ValueError:
-        author = ctx.message.author
-        await ctx.send(f'{author.mention}, долбоёб, введи число!')
+async def roll(ctx, arg):
+    if int(arg) < 0:
+        await ctx.send(random.randint(int(arg), 0))
+    else:
+        try:
+            await ctx.send(random.randint(0,int(arg)))
+        except ValueError:
+            author = ctx.message.author
+            await ctx.send(f'{author.mention}, введи число!')
 
 fkbot.run(settings['token'])
