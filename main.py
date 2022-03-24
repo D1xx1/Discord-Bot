@@ -1,34 +1,42 @@
-from discord import utils
 import discord
-from discord.ext import commands
-from config import settings
 import random
 
-fkbot = commands.Bot(command_prefix = settings['prefix'])
+from discord.ext import commands
+from config import settings
 
+class MyClient(discord.Client):
+    async def on_ready(self):
+        print(f'READY, logged on as {self.user}!')
+    async def on_message(self, message):
+        if message.content.startswith('!hello'): #say hello in English
+            author = message.author
+            await message.channel.send(f'Hello, {author.mention}!')
 
-@fkbot.command()
-async def hello(ctx):
-    author = ctx.message.author
-    await ctx.send(f'Hello, {author.mention}!')
+        if message.content.startswith('!привет'): #say hello in Russian
+            author = message.author
+            await message.channel.send(f'Привет, {author.mention}')
 
-@fkbot.command()
-async def привет(ctx):
-    author = ctx.message.author
-    await ctx.send(f'Привет, {author.mention}')
+        if message.content.startswith('!roll'): #random generator
+            if message.content[5::1] == '':
+                arg = 100
+            else:
+                arg = message.content[6::1]
+                print(arg)
+            try:
+                if int(arg) < 0:
+                    a = random.randint(int(arg), 0)
+                    await message.channel.send(a)
+                    print(a)
+                    return
+                else: 
+                    a = random.randint(0,int(arg))
+                    await message.channel.send(a)
+                    print(a)
+                    return
+            except ValueError:
+                author = message.author
+                await message.channel.send(f'{author.mention}, введи число!')
+                return
 
-@fkbot.command()
-async def roll(ctx, arg='100'):
-    try:
-        if int(arg) < 0:
-            await ctx.send(random.randint(int(arg), 0))
-            return
-        else: 
-            await ctx.send(random.randint(0,int(arg)))
-            return
-    except ValueError:
-        author = ctx.message.author
-        await ctx.send(f'{author.mention}, введи число!')
-        return
-
-fkbot.run(settings['token'])
+dsbot=MyClient()
+dsbot.run(settings['token'])
