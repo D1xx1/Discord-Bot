@@ -4,6 +4,18 @@ import roles
 
 from discord.ext import commands
 from config import settings
+from time import sleep
+from threading import *
+
+def counter():
+    global nowScore
+    nowScore = 0
+    count = 0
+    while True:
+        count = count+1
+        nowScore = count
+        print(count)
+        sleep(60)
 
 fkbot = commands.Bot(command_prefix = settings['prefix'])
 @fkbot.event
@@ -19,12 +31,8 @@ async def on_raw_reaction_add(payload):
         guild = member.guild
         emoji = payload.emoji.name
 
-        if emoji == '🤖':
-            role = discord.utils.get(guild.roles, name='ВОДНИК')
-        if emoji == '👾':
-            role = discord.utils.get(guild.roles, name='Twitch')
-        if emoji == '💻':
-            role = discord.utils.get(guild.roles, name ='!dev')
+        if emoji == str(payload.emoji):
+            role = discord.utils.get(guild.roles, name=f'{roles.rList[emoji]}')
         await member.add_roles(role)
 
 @fkbot.event
@@ -34,13 +42,8 @@ async def on_raw_reaction_remove(payload):
     if messageID == roles.ROLE_POST:
         guild = await(fkbot.fetch_guild(payload.guild_id))
         emoji = payload.emoji.name
-
-        if emoji == '🤖':
-            role = discord.utils.get(guild.roles, name='ВОДНИК')
-        if emoji == '👾':
-            role = discord.utils.get(guild.roles, name='Twitch')
-        if emoji == '💻':
-            role = discord.utils.get(guild.roles, name ='!dev')
+        if emoji == str(payload.emoji):
+            role = discord.utils.get(guild.roles, name=f'{roles.rList[emoji]}')
         member = await(guild.fetch_member(payload.user_id))
         if member is not None:
             await member.remove_roles(role)
@@ -80,5 +83,11 @@ async def react(ctx):
     await msg.add_reaction('👾')
     await msg.add_reaction('💻')
 
+@fkbot.command()
+async def uptime(ctx):
+    await ctx.send(f'Время с момента запуска (минуты): {nowScore}.')
+
+thread1 = Thread(target = counter)
+thread1.start()
 
 fkbot.run(settings['token'])
